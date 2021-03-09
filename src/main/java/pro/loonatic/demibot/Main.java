@@ -46,10 +46,11 @@ public class Main {
         new CommandManager(debug);
 
         JDA api = JDABuilder.createDefault(getBotToken())
-                      .addEventListeners(new MessageListener()).build();
+                      .addEventListeners(new MessageListener())
+                      .build().awaitReady();
 
         System.out.println("Connected");
-        //jda.getPresence().setActivity(Activity.streaming("on " + System.getProperty("os.name"), "https://twitch.tv/loonatricks"));
+        //jda.setActivity(Activity.streaming("on " + System.getProperty("os.name"), "https://twitch.tv/loonatricks"));
         //jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
     }
 }
@@ -82,9 +83,9 @@ class MessageListener extends ListenerAdapter {
         TextChannel channel = event.getTextChannel();
         List<Role> role = guild.getRoles();
         //System.out.println("roles : " + Arrays.asList(role));
-       if (event.isFromType(ChannelType.PRIVATE)) {
-          PrivateChannel privateChannel = event.getPrivateChannel();
-          }
+        if (event.isFromType(ChannelType.PRIVATE)) {
+            PrivateChannel privateChannel = event.getPrivateChannel();
+        }
 
         if(isDebugMode()) {
             if(!isOwner(author)) {
@@ -92,11 +93,12 @@ class MessageListener extends ListenerAdapter {
                 return;
             }
 
+/*
             System.out.println("Channel Type: " + channel.getType());
             System.out.println("CHANNEL TRUSTED?: " + isTrustedChannel(channel));
             System.out.println("AUTHOR? " + author + " " + isOwner(author));
             System.out.println("SERVER TRUSTED? " + guild + " " + isTrustedServer(guild));
-            System.out.println("ROLE TRUSTED? " + isTrustedRole(role) );
+*/            //System.out.println("ROLE TRUSTED? " + isTrustedRole(role) );
         }
         if (!isTrustedServer(guild)) {
                 return;
