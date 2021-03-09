@@ -1,10 +1,10 @@
 package pro.loonatic.demibot;
 
 import pro.loonatic.demibot.commands.Command;
-import net.dv8tion.jda.core.*;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.*;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.security.auth.login.LoginException;
 import java.io.FileNotFoundException;
@@ -39,24 +39,17 @@ public class Main {
         threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount);
     }
 
-    public static void main(String...args) throws FileNotFoundException {
+    public static void main(String...args) throws FileNotFoundException, LoginException, InterruptedException {
         Config.loadConfig();
         final boolean debug = isDebugMode();
         new CommandUtils();
         new CommandManager(debug);
 
-        try {
-            jda = new JDABuilder(AccountType.BOT)
-                    .setToken(getBotToken())
-                    .addEventListener(new MessageListener())
-                    .buildBlocking();
-        } catch (LoginException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        JDA api = JDABuilder.createDefault(getBotToken())
+                      .addEventListeners(new MessageListener()).build();
+
         System.out.println("Connected");
-        jda.getPresence().setGame(Game.streaming("on " + System.getProperty("os.name"), "https://twitch.tv/loonatricks"));
+        //jda.getPresence().setActivity(Activity.streaming("on " + System.getProperty("os.name"), "https://twitch.tv/loonatricks"));
         //jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
     }
 }
@@ -86,30 +79,24 @@ class MessageListener extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         User author = event.getAuthor();
         Guild guild = event.getGuild();
-        Channel channel = event.getTextChannel();
+        TextChannel channel = event.getTextChannel();
         List<Role> role = guild.getRoles();
         //System.out.println("roles : " + Arrays.asList(role));
-        PrivateChannel privateChannel = event.getPrivateChannel();
+       if (event.isFromType(ChannelType.PRIVATE)) {
+          PrivateChannel privateChannel = event.getPrivateChannel();
+          }
 
         if(isDebugMode()) {
             if(!isOwner(author)) {
                 System.out.println("TRUSTED? " + author + " " + isTrustedUser(author));
                 return;
             }
-            try {
-                if (privateChannel.getType().toString().equals("PRIVATE")) {
-                    System.out.println("Channel Type: " + privateChannel.getType());
-                    return;
-                }
-            } catch(NullPointerException e) {
 
-            }
-/*
             System.out.println("Channel Type: " + channel.getType());
             System.out.println("CHANNEL TRUSTED?: " + isTrustedChannel(channel));
             System.out.println("AUTHOR? " + author + " " + isOwner(author));
             System.out.println("SERVER TRUSTED? " + guild + " " + isTrustedServer(guild));
-*/            //System.out.println("ROLE TRUSTED? " + isTrustedRole(role) );
+            System.out.println("ROLE TRUSTED? " + isTrustedRole(role) );
         }
         if (!isTrustedServer(guild)) {
                 return;
