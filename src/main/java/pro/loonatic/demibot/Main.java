@@ -50,7 +50,7 @@ public class Main {
                       .build().awaitReady();
 
         System.out.println("Connected");
-        //jda.setActivity(Activity.streaming("on " + System.getProperty("os.name"), "https://twitch.tv/loonatricks"));
+        //jda.getPresence().setActivity(Activity.streaming("on " + System.getProperty("os.name"), "https://twitch.tv/loonatricks"));
         //jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
     }
 }
